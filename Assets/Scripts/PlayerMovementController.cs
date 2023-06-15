@@ -10,6 +10,8 @@ public class PlayerMovementController : MonoBehaviour
     Vector2 moveInputDirection;
     Vector2 targetVelocity;
 
+    public Animator animator;
+
     public float movementSpeed = 8f;
     public float jumpForce = 2f;
     public float gravity = -1f;
@@ -50,6 +52,8 @@ public class PlayerMovementController : MonoBehaviour
         }
 
         Flip();
+
+        animator.SetBool("isWalking", targetVelocity.x != 0);
     }
 
     public void CalculateGravity()
