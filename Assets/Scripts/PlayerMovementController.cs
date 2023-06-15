@@ -14,6 +14,8 @@ public class PlayerMovementController : MonoBehaviour
     public float jumpForce = 2f;
     public float gravity = -1f;
 
+    float facingDirection = -1;
+
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
@@ -46,6 +48,8 @@ public class PlayerMovementController : MonoBehaviour
         {
             targetVelocity.x = 0;
         }
+
+        Flip();
     }
 
     public void CalculateGravity()
@@ -58,6 +62,18 @@ public class PlayerMovementController : MonoBehaviour
         {
             //When on the ground, clamp the target Y velovity to 0 to avoid getting stuck in the floor
             targetVelocity.y = Mathf.Clamp(targetVelocity.y, 0, Mathf.Infinity); 
+        }
+    }
+
+    public void Flip()
+    {
+        if (moveInputDirection.x != 0)
+        {
+            if (facingDirection != moveInputDirection.x)
+            {
+                facingDirection *= -1;
+                transform.localScale = new Vector3(-facingDirection, 1);
+            }
         }
     }
 
