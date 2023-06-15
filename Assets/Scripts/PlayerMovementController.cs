@@ -11,6 +11,7 @@ public class PlayerMovementController : MonoBehaviour
     Vector2 targetVelocity;
 
     public float movementSpeed = 8f;
+    public float jumpForce = 2f;
     public float gravity = -1f;
 
     void Start()
@@ -35,6 +36,16 @@ public class PlayerMovementController : MonoBehaviour
     public void Walk()
     {
         targetVelocity.x = moveInputDirection.x * movementSpeed;
+
+        //Check if we colliding with a wall while moving in that direction 
+        bool runningIntoLeftWall = collisions.onLeftWall && targetVelocity.x < 0;
+        bool runningIntoRightWall = collisions.onRightWall && targetVelocity.x > 0;
+
+        //Set the target X velocity to 0 to avoid getting stuck on the wall 
+        if (runningIntoLeftWall || runningIntoRightWall)
+        {
+            targetVelocity.x = 0;
+        }
     }
 
     public void CalculateGravity()
@@ -45,7 +56,8 @@ public class PlayerMovementController : MonoBehaviour
         }
         else
         {
-            targetVelocity.y = Mathf.Clamp(targetVelocity.y, 0, Mathf.Infinity);
+            //When on the ground, clamp the target Y velovity to 0 to avoid getting stuck in the floor
+            targetVelocity.y = Mathf.Clamp(targetVelocity.y, 0, Mathf.Infinity); 
         }
     }
 
@@ -54,5 +66,13 @@ public class PlayerMovementController : MonoBehaviour
     public void OnMove(InputValue inputValue)
     {
         moveInputDirection = inputValue.Get<Vector2>().normalized;
+    }
+
+    public void OnJump()
+    {
+        if (collisions.onGround)
+        {
+            targetVelocity.y = jumpForce;
+        }
     }
 }
