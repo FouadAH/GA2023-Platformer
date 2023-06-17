@@ -12,9 +12,16 @@ public class PlayerMovementController : MonoBehaviour
 
     public Animator animator;
 
+    [Header("Movement Settings")]
     public float movementSpeed = 8f;
     public float jumpForce = 2f;
     public float gravity = -1f;
+
+    [Header("Damping Settings")]
+    public bool smoothDamp = false;
+    public float groundedSmoothTime = 0.03f;
+    public float airbornSmoothTime = 0.1f;
+    float targetVelocityXRef;
 
     float facingDirection = -1;
 
@@ -26,7 +33,14 @@ public class PlayerMovementController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CalculateVelocity_Simple();
+        if (smoothDamp)
+        {
+            CalculateVelocity_SmoothDamp();
+        }
+        else
+        {
+            CalculateVelocity_Simple();
+        }
 
         Walk();
         CalculateGravity();
@@ -35,6 +49,17 @@ public class PlayerMovementController : MonoBehaviour
     public void CalculateVelocity_Simple()
     {
         playerRigidbody.velocity = targetVelocity;
+    }
+
+    public void CalculateVelocity_SmoothDamp()
+    {
+        float smoothTime = (collisions.onGround) ? groundedSmoothTime : airbornSmoothTime;
+        Vector2 velocity = playerRigidbody.velocity;
+
+        velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocity.x, ref targetVelocityXRef, smoothTime);
+        velocity.y = targetVelocity.y;
+
+        playerRigidbody.velocity = velocity;
     }
 
     public void Walk()
