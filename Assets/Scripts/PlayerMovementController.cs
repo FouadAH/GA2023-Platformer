@@ -82,7 +82,12 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     public void CalculateGravity()
-    {
+    { 
+        if (collisions.onTopWall)
+        {
+            targetVelocity.y = 0;
+        }
+        
         if (!collisions.onGround)
         {
             targetVelocity.y += gravity;
@@ -92,6 +97,8 @@ public class PlayerMovementController : MonoBehaviour
             //When on the ground, clamp the target Y velovity to 0 to avoid getting stuck in the floor
             targetVelocity.y = Mathf.Clamp(targetVelocity.y, 0, Mathf.Infinity); 
         }
+
+        animator.SetBool("isJumping", !collisions.onGround);
     }
 
     public void Flip()
