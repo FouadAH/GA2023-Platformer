@@ -10,7 +10,6 @@ public class PlayerRespawnController : MonoBehaviour
     private void Start()
     {
         playerEventChannel.OnRespawn += OnRespawn;
-        playerEventChannel.OnSetRespawn += OnSetRespawn;
     }
 
     void OnRespawn(Transform player)
@@ -18,8 +17,4 @@ public class PlayerRespawnController : MonoBehaviour
         player.position = respawnPosition.position;
     }
 
-    void OnSetRespawn(Vector2 respawnPoint)
-    {
-        respawnPosition.position = respawnPoint;
-    }
 }

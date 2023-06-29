@@ -8,10 +8,31 @@ public class PlayerHUD : MonoBehaviour
     public GameObject heartPrefab;
     public Transform heartsParent;
 
-    void Start()
+    void Awake()
     {
         playerEventChannel.OnTakeDamage += HandleTakeDamage;
+        playerEventChannel.OnSetPlayerHealth += InitializeHealth;
         playerEventChannel.OnHeal += HandleHeal;
+    }
+
+    private void OnDestroy()
+    {
+        playerEventChannel.OnTakeDamage -= HandleTakeDamage;
+        playerEventChannel.OnSetPlayerHealth -= InitializeHealth;
+        playerEventChannel.OnHeal -= HandleHeal;
+    }
+
+    void InitializeHealth(int maxHealth)
+    {
+        foreach (Transform child in heartsParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        for (int i = 0; i < maxHealth; i++)
+        {
+            Instantiate(heartPrefab, heartsParent);
+        }
     }
 
     void HandleTakeDamage()

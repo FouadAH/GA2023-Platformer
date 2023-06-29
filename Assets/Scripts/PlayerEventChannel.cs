@@ -7,11 +7,11 @@ using UnityEngine.Events;
 public class PlayerEventChannel : ScriptableObject
 {
     public UnityAction OnTakeDamage;
+
     public UnityAction<int> OnHeal;
+    public UnityAction<int> OnSetPlayerHealth;
 
     public UnityAction<Transform> OnRespawn;
-    public UnityAction<Vector2> OnSetRespawn;
-    public UnityAction<Transform> OnPlayerDeath;
 
     public void RaiseOnTakeDamage()
     {
@@ -23,9 +23,9 @@ public class PlayerEventChannel : ScriptableObject
         OnHeal?.Invoke(amountHealed);
     }
 
-    public void RaiseOnPlayerDeath(Transform player)
+    public void RaiseOnSetPlayerHealth(int maxHealth)
     {
-        OnPlayerDeath?.Invoke(player);
+        OnSetPlayerHealth?.Invoke(maxHealth);
     }
 
     public void RaiseOnPlayerRespawn(Transform player)
@@ -33,8 +33,4 @@ public class PlayerEventChannel : ScriptableObject
         OnRespawn?.Invoke(player);
     }
 
-    public void RaiseOnSetPlayerRespawnPoint(Vector2 respawnPoint)
-    {
-        OnSetRespawn?.Invoke(respawnPoint);
-    }
 }

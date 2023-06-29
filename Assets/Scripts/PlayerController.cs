@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public SpriteRenderer spriteRenderer;
-
     public int maxHealth = 5;
-    public int health = 5;
+    int health = 5;
 
+    public SpriteRenderer spriteRenderer;
     public PlayerEventChannel playerEventChannel;
 
     float damageTimer;
     float damageTime = 1f;
     bool canTakeDamage;
+
+    public void Start()
+    {
+        playerEventChannel.RaiseOnSetPlayerHealth(maxHealth);
+    }
 
     private void Update()
     {
