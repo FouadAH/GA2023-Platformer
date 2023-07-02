@@ -6,13 +6,13 @@ public class BlueBeetleChaserEntity : Entity
 {
     public IdleState idleState { get; private set; }
     public MoveState moveState { get; private set; }
-    public PlayerDetectedState chaseState { get; private set; }
+    public ChaseState chaseState { get; private set; }
 
 
     [Header("States")]
     public D_IdleState idleStateData;
     public D_MoveState moveStateData;
-    public D_PlayerDetected chaseStateData;
+    public D_ChaseState chaseStateData;
 
 
     public override void Start()

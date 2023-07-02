@@ -16,11 +16,6 @@ public class IdleState : State
         this.stateData = stateData;
     }
 
-    public override void DoChecks()
-    {
-        base.DoChecks();
-    }
-
     public override void Enter()
     {
         base.Enter();
@@ -43,7 +38,6 @@ public class IdleState : State
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        entity.SetVelocityX(0f);
         if (Time.time >= startTime + idleTime)
         {
             isIdleTimeOver = true;
@@ -52,7 +46,8 @@ public class IdleState : State
 
     public override void PhysicsUpdate()
     {
-        base.PhysicsUpdate();        
+        base.PhysicsUpdate();
+        entity.SetVelocityX(0f);
     }
 
     public void SetFlipAfterIdle(bool flip)

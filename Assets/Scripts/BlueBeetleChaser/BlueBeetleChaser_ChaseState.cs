@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlueBeetleChaser_ChaseState : PlayerDetectedState
+public class BlueBeetleChaser_ChaseState : ChaseState
 {
     BlueBeetleChaserEntity BlueBeetleChaserEntity;
 
-    public BlueBeetleChaser_ChaseState(Entity etity, FiniteStateMachine stateMachine, string animBoolName, D_PlayerDetected stateData, BlueBeetleChaserEntity blueBeetleChaserEntity) : base(etity, stateMachine, animBoolName, stateData)
+    public BlueBeetleChaser_ChaseState(Entity etity, FiniteStateMachine stateMachine, string animBoolName, D_ChaseState stateData, BlueBeetleChaserEntity blueBeetleChaserEntity) : base(etity, stateMachine, animBoolName, stateData)
     {
         BlueBeetleChaserEntity = blueBeetleChaserEntity;
     }

@@ -28,27 +28,9 @@ public class MoveState : State
         entity.SetVelocity(stateData.movementSpeed);
     }
 
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
-    public override void LogicUpdate()
-    {
-        base.LogicUpdate();
-    }
-
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-
-        if (stateData.movementDirection == MovementDirection.Horizontal)
-        {
-            entity.SetVelocity(stateData.movementSpeed);
-        }
-        else if (stateData.movementDirection == MovementDirection.Vertical)
-        {
-            entity.SetVelocityY(stateData.movementSpeed);
-        }
+        entity.SetVelocity(stateData.movementSpeed);
     }
 }

@@ -11,9 +11,8 @@ public class D_Entity : ScriptableObject
     public float ledgeCheckDistance = 0.4f;
     public float groundCheckRadius = 0.3f;
 
-    public float aggroRadius = 4f;
     public float aggroRange = 4f;
 
-    public LayerMask whatIsGround;
-    public LayerMask whatIsPlayer;
+    public LayerMask groundLayerMask;
+    public LayerMask playerLayerMask;
 }

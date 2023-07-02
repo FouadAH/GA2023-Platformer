@@ -6,11 +6,4 @@ using UnityEngine;
 public class D_MoveState : ScriptableObject
 {
     public float movementSpeed = 3f;
-    public MovementDirection movementDirection;
-}
-
-public enum MovementDirection
-{
-    Vertical,
-    Horizontal
 }
