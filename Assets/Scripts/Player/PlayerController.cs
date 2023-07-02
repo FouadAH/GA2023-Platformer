@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamagable
 {
-    public int maxHealth = 5;
-    int health = 5;
+    public int maxHealth = 4;
+    int health;
 
     public SpriteRenderer spriteRenderer;
     public PlayerEventChannel playerEventChannel;
@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
 
     public void Start()
     {
+        health = maxHealth;
         playerEventChannel.RaiseOnSetPlayerHealth(maxHealth);
     }
 
@@ -41,7 +42,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void TakeDamage()
+    public void TakeDamage(float damageAmount)
     {
         if (!canTakeDamage)
             return;

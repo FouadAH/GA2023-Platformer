@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4821438188388771501}
   - component: {fileID: 8282384158700619857}
   - component: {fileID: 2588894182900874610}
-  - component: {fileID: 981473555244395453}
+  - component: {fileID: 6725144516701915216}
   m_Layer: 0
   m_Name: pfSpike
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8282384158700619857
 SpriteRenderer:
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.50642276}
   m_EdgeRadius: 0
---- !u!114 &981473555244395453
+--- !u!114 &6725144516701915216
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,6 +140,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6640953197178868003}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78a3edd61480ab84b955bc91b8ff3577, type: 3}
+  m_Script: {fileID: 11500000, guid: aae579b19ccb08d4e9add68ce40d7378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageTargetMask:
+    serializedVersion: 2
+    m_Bits: 384

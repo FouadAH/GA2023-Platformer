@@ -25,6 +25,9 @@ public class PlayerMovementController : MonoBehaviour
 
     float facingDirection = -1;
 
+    [Header("Data")]
+    public PlayerRuntimeDataSO runtimeDataSO;
+
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
@@ -44,6 +47,8 @@ public class PlayerMovementController : MonoBehaviour
 
         Walk();
         CalculateGravity();
+
+        runtimeDataSO.playerPosition = transform.position;
     }
 
     public void CalculateVelocity_Simple()
