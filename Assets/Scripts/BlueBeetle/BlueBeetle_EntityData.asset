@@ -16,11 +16,10 @@ MonoBehaviour:
   wallCheckDistance: 0.2
   ledgeCheckDistance: 0.4
   groundCheckRadius: 0.2
-  aggroRadius: 0
   aggroRange: 0
-  whatIsGround:
+  groundLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  whatIsPlayer:
+  playerLayerMask:
     serializedVersion: 2
     m_Bits: 128
