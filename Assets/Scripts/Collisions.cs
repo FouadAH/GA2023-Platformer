@@ -6,7 +6,7 @@ using UnityEngine;
 public class Collisions : MonoBehaviour
 {
     [Header("Layers")]
-    public LayerMask groundLayer;
+    public LayerMask groundLayer; 
 
     [Header("Collision Settings")]
     public float collisionRadius = 0.25f;
