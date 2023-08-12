@@ -22,7 +22,17 @@ public class Collisions : MonoBehaviour
     public bool onRightWall;
     public bool onLeftWall;
 
-    void Update()
+    void FixedUpdate()
+    {
+        //onGround = Physics2D.OverlapCircle((Vector2)transform.position + bottomOffset, collisionRadius, groundLayer);
+        //onTopWall = Physics2D.OverlapCircle((Vector2)transform.position + topOffset, collisionRadius, groundLayer);
+        //onRightWall = Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, groundLayer);
+        //onLeftWall = Physics2D.OverlapCircle((Vector2)transform.position + leftOffset, collisionRadius, groundLayer);
+
+        //onWall = onRightWall || onLeftWall;
+    }
+
+    public void CheckCollisions()
     {
         onGround = Physics2D.OverlapCircle((Vector2)transform.position + bottomOffset, collisionRadius, groundLayer);
         onTopWall = Physics2D.OverlapCircle((Vector2)transform.position + topOffset, collisionRadius, groundLayer);

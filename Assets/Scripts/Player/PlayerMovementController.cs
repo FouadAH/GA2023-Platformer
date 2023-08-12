@@ -15,6 +15,8 @@ public class PlayerMovementController : MonoBehaviour
     [Header("Movement Settings")]
     public float movementSpeed = 8f;
     public float jumpForce = 2f;
+    public float minJumpForce = 0.2f;
+
     public float gravity = -1f;
 
     [Header("Damping Settings")]
@@ -25,17 +27,51 @@ public class PlayerMovementController : MonoBehaviour
 
     float facingDirection = -1;
 
+    [Header("Jump Buffer")]
+    public bool jumpBuffer = true;
+    int jumpFrameBuffer;
+    public int jumpFrameBufferFrames = 10;
+
+    [Header("Cayote Time")]
+    public bool cayoteTime = true;
+    public float cayoteTimeMax = 0.1f;
+    public float currentCayoteTime;
+
+    [Header("Effects")]
+    public ParticleSystem walkVFX;
+    public AudioSource walkSFX;
+    public float footstepDelay;
+    public float footstepInterval;
+
     [Header("Data")]
     public PlayerRuntimeDataSO runtimeDataSO;
+    public PlayerInputMaster playerInputs;
+
+    bool hasJumped;
+    bool isWalking;
 
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
         collisions = GetComponent<Collisions>();
+
+        playerInputs = new PlayerInputMaster();
+        playerInputs.Enable();
+        playerInputs.Player.Jump.started += Jump_started;
+        playerInputs.Player.Jump.canceled += Jump_canceled;
+
+        jumpFrameBuffer = 100;
+    }
+
+    private void Update()
+    {
+        moveInputDirection = playerInputs.Player.Move.ReadValue<Vector2>().normalized;
     }
 
     private void FixedUpdate()
     {
+        collisions.CheckCollisions();
+
         if (smoothDamp)
         {
             CalculateVelocity_SmoothDamp();
@@ -46,9 +82,65 @@ public class PlayerMovementController : MonoBehaviour
         }
 
         Walk();
+        Flip();
+
+        JumpCheck();
+
         CalculateGravity();
 
+        if (cayoteTime)
+        {
+            CayoteTime();
+        }
+
+        if (jumpBuffer)
+        {
+            JumpBuffer();
+        }
+
+        //if (collisions.onGround && hasJumped)
+        //{
+        //    hasJumped = false;
+        //}
+
         runtimeDataSO.playerPosition = transform.position;
+    }
+
+    public void JumpCheck()
+    {
+        //We check if we landed before allowing another jump
+        if (hasJumped && collisions.onGround && targetVelocity.y < 0)
+        {
+            hasJumped = false;
+        }
+    }
+
+    void CayoteTime()
+    {
+        if (!collisions.onGround && !hasJumped)
+        {
+            currentCayoteTime += Time.deltaTime;
+        }
+        else
+        {
+            currentCayoteTime = 0;
+        }
+    }
+
+    void JumpBuffer()
+    {
+        if (!collisions.onGround)
+        {
+            jumpFrameBuffer++;
+        }
+        else
+        {
+            if (jumpFrameBuffer < jumpFrameBufferFrames)
+            {
+                targetVelocity.y = jumpForce;
+                jumpFrameBuffer = 100;
+            }
+        }
     }
 
     public void CalculateVelocity_Simple()
@@ -81,9 +173,36 @@ public class PlayerMovementController : MonoBehaviour
             targetVelocity.x = 0;
         }
 
-        Flip();
-
         animator.SetBool("isWalking", targetVelocity.x != 0);
+        WalkSFX();
+    }
+
+    void WalkSFX()
+    {
+        if (targetVelocity.x != 0 && collisions.onGround)
+        {
+            if (!isWalking)
+            {
+                isWalking = true;
+                StartCoroutine(StartWalkSFX());
+            }
+        }
+        else
+        {
+            isWalking = false;
+            StopAllCoroutines();
+        }
+    }
+
+    IEnumerator StartWalkSFX()
+    {
+        yield return new WaitForSeconds(footstepDelay);
+
+        while (isWalking)
+        {
+            Instantiate(walkSFX).Play();
+            yield return new WaitForSeconds(footstepInterval);
+        }
     }
 
     public void CalculateGravity()
@@ -118,18 +237,31 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
 
-    //===================Inputs=======================//
-
-    public void OnMove(InputValue inputValue)
+    private void Jump_canceled(InputAction.CallbackContext obj)
     {
-        moveInputDirection = inputValue.Get<Vector2>().normalized;
+        if (targetVelocity.y > minJumpForce)
+        {
+            targetVelocity.y = minJumpForce;
+        }
     }
 
-    public void OnJump()
+    private void Jump_started(InputAction.CallbackContext obj)
     {
-        if (collisions.onGround)
+        if (collisions.onGround || currentCayoteTime < cayoteTimeMax)
         {
-            targetVelocity.y = jumpForce;
+            if (!hasJumped)
+            {
+                targetVelocity.y = jumpForce;
+                hasJumped = true;
+            }
+            else
+            {
+                jumpFrameBuffer = 0;
+            }
+        }
+        else
+        {
+            jumpFrameBuffer = 0;
         }
     }
 }

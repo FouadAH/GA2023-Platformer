@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Cinemachine;
+using DG.Tweening;
 
 public class Entity: MonoBehaviour, IDamagable
 {
@@ -12,6 +13,7 @@ public class Entity: MonoBehaviour, IDamagable
     public D_Entity entityData;
     public Rigidbody2D entityRigidbody;
     public Animator animator;
+    public SpriteRenderer spriteRenderer;
 
     [Header("Checkers")]
     public Transform wallCheck;
@@ -59,10 +61,38 @@ public class Entity: MonoBehaviour, IDamagable
     public void TakeDamage(float damageAmount)
     {
         health -= damageAmount;
+        //StartCoroutine(DamageFlash());
+        spriteRenderer.DOColor(Color.red, damageFlashDuration).OnComplete(() =>
+        {
+            spriteRenderer.DOColor(Color.white, damageFlashDuration);
+        });
 
         if (health <= 0)
         {
             Destroy(gameObject);
+        }
+    }
+
+    float currentFadeTime;
+    public float damageFlashDuration = 0.1f;
+
+    IEnumerator DamageFlash()
+    {
+        while (currentFadeTime < 1.0f)
+        {
+            spriteRenderer.color = Color.Lerp(spriteRenderer.color, Color.red, Mathf.SmoothStep(0.0f, 1.0f, currentFadeTime));
+            currentFadeTime += Time.deltaTime / damageFlashDuration;
+            yield return null;
+        }
+
+        currentFadeTime = 0;
+        yield return new WaitForSeconds(0.1f);
+
+        while (currentFadeTime < 1.0f)
+        {
+            spriteRenderer.color = Color.Lerp(spriteRenderer.color, Color.white, Mathf.SmoothStep(0.0f, 1.0f, currentFadeTime));
+            currentFadeTime += Time.deltaTime / damageFlashDuration;
+            yield return null;
         }
     }
 

@@ -11,6 +11,9 @@ public class Bullet : MonoBehaviour
     public float speed;
     public Vector2 direction;
 
+    [Header("Effects")]
+    public ParticleSystem bulletImpact;
+
     Rigidbody2D rb;
 
     private void Start()
@@ -32,6 +35,7 @@ public class Bullet : MonoBehaviour
 
         if ((obstaclesMask & (1 << collision.gameObject.layer)) != 0)
         {
+            Instantiate(bulletImpact, transform.position, Quaternion.identity).Play();
             Destroy(gameObject);
         }
     }

@@ -52,7 +52,7 @@ MonoBehaviour:
   entityData: {fileID: 11400000, guid: f367187ad5cf42842b695d0ab554e61f, type: 2}
   entityRigidbody: {fileID: 2545700313021541259}
   animator: {fileID: 1398213730604583396}
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 1297444128397320908}
   wallCheck: {fileID: 6416255511854361533}
   ledgeCheck: {fileID: 6585711067694892395}
   playerCheck: {fileID: 1478952994948421259}
@@ -62,6 +62,7 @@ MonoBehaviour:
   accelerationTimeGrounded: 0.05
   playerRuntimeData: {fileID: 11400000, guid: 9f662e89744a7d849b8bd0891f2c82be, type: 2}
   facingDirection: -1
+  damageFlashDuration: 0.1
   idleStateData: {fileID: 11400000, guid: 865b699c5f722ee479fea0f9b7c7a153, type: 2}
   moveStateData: {fileID: 11400000, guid: 57c265b51dde3d84085c3d8199dfeaf8, type: 2}
 --- !u!50 &2545700313021541259

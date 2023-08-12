@@ -12,9 +12,9 @@ public class PlayerRespawnController : MonoBehaviour
         playerEventChannel.OnRespawn += OnRespawn;
     }
 
-    void OnRespawn(Transform player)
+    void OnRespawn()
     {
-        player.position = respawnPosition.position;
+        playerEventChannel.playerTransform.position = respawnPosition.position;
     }
 
 }

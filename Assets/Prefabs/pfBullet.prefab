@@ -180,3 +180,5 @@ MonoBehaviour:
   damageAmount: 8
   speed: 18
   direction: {x: 0, y: 0}
+  bulletImpact: {fileID: 8580163127799059107, guid: 6609dfc4a054d224b860fe160fc2da45, type: 3}
+  bulletFired: {fileID: 1082130086905084476, guid: f8d165e9fd15b8944aa864d44e8736bd, type: 3}

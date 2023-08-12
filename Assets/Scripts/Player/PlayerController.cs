@@ -1,6 +1,8 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, IDamagable
 {
@@ -14,10 +16,21 @@ public class PlayerController : MonoBehaviour, IDamagable
     float damageTime = 1f;
     bool canTakeDamage;
 
+    [Header("Effects")]
+    public CinemachineImpulseSource impulseSource;
+    public ParticleSystem damageVFX;
+
     public void Start()
     {
         health = maxHealth;
         playerEventChannel.RaiseOnSetPlayerHealth(maxHealth);
+        playerEventChannel.playerTransform = transform;
+        playerEventChannel.OnRespawn += EnableControls;
+    }
+
+    private void OnDestroy()
+    {
+        playerEventChannel.OnRespawn -= EnableControls;
     }
 
     private void Update()
@@ -53,12 +66,26 @@ public class PlayerController : MonoBehaviour, IDamagable
         spriteRenderer.color = Color.red;
 
         playerEventChannel.RaiseOnTakeDamage();
+        
+        Instantiate(damageVFX, transform.position, Quaternion.identity).Play();
+        impulseSource.GenerateImpulse();
 
         if (health <= 0)
         {
-            playerEventChannel.RaiseOnPlayerRespawn(transform);
+            DisableControls();
+            playerEventChannel.RaiseOnPlayerDeath();
             Heal(maxHealth);
         }
+    }
+
+    void DisableControls()
+    {
+        GetComponent<PlayerMovementController>().playerInputs.Disable();
+    }
+
+    void EnableControls()
+    {
+        GetComponent<PlayerMovementController>().playerInputs.Enable();
     }
 
     public void Heal(int healAmount)
