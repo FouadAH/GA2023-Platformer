@@ -40,6 +40,9 @@ public class PlayerMovementController : MonoBehaviour
     [Header("Effects")]
     public ParticleSystem walkVFX;
     public AudioSource walkSFX;
+    public AudioSource jumpSFX;
+    public AudioSource landSFX;
+
     public float footstepDelay;
     public float footstepInterval;
 
@@ -112,6 +115,7 @@ public class PlayerMovementController : MonoBehaviour
         if (hasJumped && collisions.onGround && targetVelocity.y < 0)
         {
             hasJumped = false;
+            landSFX.Play();
         }
     }
 
@@ -137,7 +141,7 @@ public class PlayerMovementController : MonoBehaviour
         {
             if (jumpFrameBuffer < jumpFrameBufferFrames)
             {
-                targetVelocity.y = jumpForce;
+                Jump();
                 jumpFrameBuffer = 100;
             }
         }
@@ -251,7 +255,7 @@ public class PlayerMovementController : MonoBehaviour
         {
             if (!hasJumped)
             {
-                targetVelocity.y = jumpForce;
+                Jump();
                 hasJumped = true;
             }
             else
@@ -263,5 +267,11 @@ public class PlayerMovementController : MonoBehaviour
         {
             jumpFrameBuffer = 0;
         }
+    }
+
+    void Jump()
+    {
+        targetVelocity.y = jumpForce;
+        jumpSFX.Play();
     }
 }

@@ -29,6 +29,12 @@ public class Entity: MonoBehaviour, IDamagable
     [Header("Player Data")]
     public PlayerRuntimeDataSO playerRuntimeData;
 
+    [Header("Effects")]
+    public float damageFlashDuration = 0.1f;
+    public AudioSource deathSFX;
+
+    public PlayerEventChannel playerEvents;
+
     private Vector2 velocity;
     private float velocityXSmoothing = 0;
     private float health;
@@ -61,7 +67,7 @@ public class Entity: MonoBehaviour, IDamagable
     public void TakeDamage(float damageAmount)
     {
         health -= damageAmount;
-        //StartCoroutine(DamageFlash());
+
         spriteRenderer.DOColor(Color.red, damageFlashDuration).OnComplete(() =>
         {
             spriteRenderer.DOColor(Color.white, damageFlashDuration);
@@ -69,30 +75,9 @@ public class Entity: MonoBehaviour, IDamagable
 
         if (health <= 0)
         {
+            Instantiate(deathSFX).Play();
+            playerEvents.RaiseOnReceivePoints(5);
             Destroy(gameObject);
-        }
-    }
-
-    float currentFadeTime;
-    public float damageFlashDuration = 0.1f;
-
-    IEnumerator DamageFlash()
-    {
-        while (currentFadeTime < 1.0f)
-        {
-            spriteRenderer.color = Color.Lerp(spriteRenderer.color, Color.red, Mathf.SmoothStep(0.0f, 1.0f, currentFadeTime));
-            currentFadeTime += Time.deltaTime / damageFlashDuration;
-            yield return null;
-        }
-
-        currentFadeTime = 0;
-        yield return new WaitForSeconds(0.1f);
-
-        while (currentFadeTime < 1.0f)
-        {
-            spriteRenderer.color = Color.Lerp(spriteRenderer.color, Color.white, Mathf.SmoothStep(0.0f, 1.0f, currentFadeTime));
-            currentFadeTime += Time.deltaTime / damageFlashDuration;
-            yield return null;
         }
     }
 

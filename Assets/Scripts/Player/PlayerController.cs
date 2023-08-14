@@ -19,18 +19,25 @@ public class PlayerController : MonoBehaviour, IDamagable
     [Header("Effects")]
     public CinemachineImpulseSource impulseSource;
     public ParticleSystem damageVFX;
+    public AudioSource hurtSFX;
+    public AudioSource deathSFX;
+
+    int pointsAmount;
 
     public void Start()
     {
         health = maxHealth;
         playerEventChannel.RaiseOnSetPlayerHealth(maxHealth);
         playerEventChannel.playerTransform = transform;
+
+        playerEventChannel.OnReceivePoints += OnReceivePoints; 
         playerEventChannel.OnRespawn += EnableControls;
     }
 
     private void OnDestroy()
     {
         playerEventChannel.OnRespawn -= EnableControls;
+        playerEventChannel.OnReceivePoints -= OnReceivePoints;
     }
 
     private void Update()
@@ -70,9 +77,14 @@ public class PlayerController : MonoBehaviour, IDamagable
         Instantiate(damageVFX, transform.position, Quaternion.identity).Play();
         impulseSource.GenerateImpulse();
 
+        hurtSFX.Play();
+
         if (health <= 0)
         {
             DisableControls();
+
+            deathSFX.Play();
+
             playerEventChannel.RaiseOnPlayerDeath();
             Heal(maxHealth);
         }
@@ -92,5 +104,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         health += healAmount;
         playerEventChannel.RaiseOnHeal(healAmount);
+    }
+
+    void OnReceivePoints(int amount)
+    {
+        pointsAmount += amount;
+        playerEventChannel.OnUpdatePointUI(pointsAmount);
     }
 }

@@ -24,12 +24,7 @@ public class Collisions : MonoBehaviour
 
     void FixedUpdate()
     {
-        //onGround = Physics2D.OverlapCircle((Vector2)transform.position + bottomOffset, collisionRadius, groundLayer);
-        //onTopWall = Physics2D.OverlapCircle((Vector2)transform.position + topOffset, collisionRadius, groundLayer);
-        //onRightWall = Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, groundLayer);
-        //onLeftWall = Physics2D.OverlapCircle((Vector2)transform.position + leftOffset, collisionRadius, groundLayer);
-
-        //onWall = onRightWall || onLeftWall;
+        //CheckCollisions();
     }
 
     public void CheckCollisions()

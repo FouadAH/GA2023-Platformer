@@ -1,8 +1,8 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class PlayerHUD : MonoBehaviour
 {
@@ -11,10 +11,12 @@ public class PlayerHUD : MonoBehaviour
     public Transform heartsParent;
     public CanvasGroup fadeCanvas;
     public float fadeDuration = 1f;
+    public TMP_Text pointsText;
     float currentFadeTime;
 
     void Awake()
     {
+        playerEventChannel.OnUpdatePointUI += OnUpdatePointsUI;
         playerEventChannel.OnTakeDamage += HandleTakeDamage;
         playerEventChannel.OnSetPlayerHealth += InitializeHealth;
         playerEventChannel.OnHeal += HandleHeal;
@@ -23,6 +25,7 @@ public class PlayerHUD : MonoBehaviour
 
     private void OnDestroy()
     {
+        playerEventChannel.OnUpdatePointUI -= OnUpdatePointsUI;
         playerEventChannel.OnTakeDamage -= HandleTakeDamage;
         playerEventChannel.OnSetPlayerHealth -= InitializeHealth;
         playerEventChannel.OnHeal -= HandleHeal;
@@ -64,32 +67,42 @@ public class PlayerHUD : MonoBehaviour
 
         fadeCanvas.DOFade(1, fadeDuration).OnComplete(() =>
         {
-            playerEventChannel.RaiseOnPlayerRespawn();
-            fadeCanvas.DOFade(0, fadeDuration);
+            StartCoroutine(FadeOut());
         });
+    }
+
+
+    IEnumerator FadeOut()
+    {
+        yield return new WaitForSeconds(1f);
+
+        playerEventChannel.RaiseOnPlayerRespawn();
+        fadeCanvas.DOFade(0, fadeDuration);
     }
 
     IEnumerator Fade()
     {
+        currentFadeTime = 0;
         while (currentFadeTime < 1.0f)
         {
-            fadeCanvas.alpha = Mathf.Lerp(fadeCanvas.alpha, 1.0f, Mathf.SmoothStep(0.0f, 1.0f, currentFadeTime));
+            fadeCanvas.alpha = Mathf.Lerp(fadeCanvas.alpha, 1.0f, currentFadeTime);
             currentFadeTime += Time.deltaTime / fadeDuration;
             yield return null;
         }
-
-        currentFadeTime = 0;
-        fadeCanvas.alpha = 1;
 
         yield return new WaitForSeconds(1f);
 
+        currentFadeTime = 0;
         while (currentFadeTime < 1.0f)
         {
-            fadeCanvas.alpha = Mathf.Lerp(fadeCanvas.alpha, 0, Mathf.SmoothStep(0.0f, 1.0f, currentFadeTime));
+            fadeCanvas.alpha = Mathf.Lerp(fadeCanvas.alpha, 0, currentFadeTime);
             currentFadeTime += Time.deltaTime / fadeDuration;
             yield return null;
         }
+    }
 
-        fadeCanvas.alpha = 0;
+    void OnUpdatePointsUI(int amount)
+    {
+        pointsText.text = amount.ToString();
     }
 }

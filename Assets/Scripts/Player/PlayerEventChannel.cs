@@ -12,6 +12,9 @@ public class PlayerEventChannel : ScriptableObject
     public UnityAction<int> OnHeal;
     public UnityAction<int> OnSetPlayerHealth;
 
+    public UnityAction<int> OnReceivePoints;
+    public UnityAction<int> OnUpdatePointUI;
+
     public UnityAction OnRespawn;
 
     public Transform playerTransform;
@@ -30,6 +33,7 @@ public class PlayerEventChannel : ScriptableObject
         OnSetPlayerHealth?.Invoke(maxHealth);
     }
 
+
     public void RaiseOnPlayerRespawn()
     {
         OnRespawn?.Invoke();
@@ -38,6 +42,16 @@ public class PlayerEventChannel : ScriptableObject
     public void RaiseOnPlayerDeath()
     {
         OnDeath?.Invoke();
+    }
+
+    public void RaiseOnReceivePoints(int pointsAmount)
+    {
+        OnReceivePoints?.Invoke(pointsAmount);
+    }
+
+    public void RaiseOnUpdatePointUI(int pointsAmount)
+    {
+        OnUpdatePointUI?.Invoke(pointsAmount);
     }
 
 }
