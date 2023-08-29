@@ -1,17 +1,25 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class PlayerShootingController : MonoBehaviour
 {
+    PlayerMovementController movementController;
+
     public GameObject bulletPrefab;
     public Transform spawnPoint;
 
+    public Transform gunSpriteTransform;
     public Transform gunTransform;
+
     public Transform gunRecoilPosition;
     public Transform gunOriginalPosition;
 
+    public float recoilForceAmount = 5f;
     public float fireCooldown;
     float lastFiredTime;
 
@@ -19,25 +27,64 @@ public class PlayerShootingController : MonoBehaviour
     public ParticleSystem fireVFX;
     public AudioSource shootSFX;
 
+    bool isRecoiling;
+
+    float currentLerpTime;
+    float recoilDuration = 0.05f;
+
+
+    public float maxGunHeat = 10f;
+    public float fireGunHeatAmount = 2.3f;
+    public float gunHeatCooldownRate = 0.5f;
+    public float gunHeat;
+
+    bool isOverHeated;
+
+    SpriteRenderer gunSpriteRenderer;
+
+    PlayerInputMaster inputActions;
+    Vector2 mousePos;
+
     private void Start()
     {
-        PlayerInputMaster inputActions = GetComponent<PlayerMovementController>().playerInputs;
+        movementController= GetComponent<PlayerMovementController>(); 
+        inputActions = GetComponent<PlayerMovementController>().playerInputs;
         inputActions.Player.Fire.started += Fire_started;
+        gunSpriteRenderer = gunSpriteTransform.GetComponent<SpriteRenderer>();
     }
 
-    private void Fire_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    private void Update()
     {
-        OnFire();
+        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        gunTransform.transform.up = (mousePos - (Vector2)transform.position).normalized;
+        gunTransform.Rotate(new Vector3(0, 0, -90));
+        gunSpriteRenderer.flipY = (gunTransform.right.x > -1 && gunTransform.right.x < 0);
+
+        gunHeat = Mathf.Clamp(Mathf.Lerp(gunHeat, 0, gunHeatCooldownRate), 0, 100f);
+        float remapedGunHeat = math.remap(0, maxGunHeat, 0, 1, gunHeat);
+
+        gunSpriteRenderer.color = Color.Lerp(Color.white, Color.red, remapedGunHeat);
+
+        if(remapedGunHeat <= 0.1f)
+        {
+            isOverHeated = false;
+        }
+    }
+
+    private void Fire_started(InputAction.CallbackContext obj)
+    {
+        OnFire(); 
     }
 
     public void FireBullet()
     {
-        Bullet bullet =  Instantiate(bulletPrefab, spawnPoint.position, Quaternion.identity).GetComponent<Bullet>();
-        float bulletXDiretion = transform.localScale.x * -1;
-        bullet.direction = new Vector2(bulletXDiretion, 0);
+        if (isOverHeated)
+            return;
 
-        Instantiate(fireVFX, spawnPoint.position, Quaternion.identity).Play();
+        Bullet bullet =  Instantiate(bulletPrefab, spawnPoint.position, gunTransform.rotation).GetComponent<Bullet>();
+        bullet.direction = -spawnPoint.right;
 
+        Instantiate(fireVFX, spawnPoint.position, gunTransform.rotation).Play();
         Instantiate(shootSFX).Play();
 
         if (isRecoiling == false)
@@ -47,19 +94,28 @@ public class PlayerShootingController : MonoBehaviour
         }
 
         impulseSource.GenerateImpulse(0.5f);
+
+        movementController.PushInDirection(recoilForceAmount, spawnPoint.right);
+
+        gunHeat += fireGunHeatAmount;
+
+        if(gunHeat > maxGunHeat)
+        {
+            isOverHeated= true;
+        }
     }
-    bool isRecoiling;
+    
     public void OnFire()
     {
         if(Time.time > lastFiredTime + fireCooldown)
         {
-            lastFiredTime = Time.time;
-            FireBullet();
+            if (gunHeat < maxGunHeat)
+            {
+                lastFiredTime = Time.time;
+                FireBullet();
+            }
         }
     }
-
-    float currentLerpTime;
-    float recoilDuration = 0.05f;
 
     IEnumerator Recoil()
     {
@@ -67,7 +123,7 @@ public class PlayerShootingController : MonoBehaviour
 
         while (currentLerpTime < 1.0f)
         {
-            gunTransform.position = Vector2.Lerp(gunTransform.position, gunRecoilPosition.position, Mathf.SmoothStep(0.0f, 1.0f, currentLerpTime));
+            gunSpriteTransform.position = Vector2.Lerp(gunSpriteTransform.position, gunRecoilPosition.position, Mathf.SmoothStep(0.0f, 1.0f, currentLerpTime));
             currentLerpTime += Time.deltaTime / recoilDuration;
             yield return null;
         }
@@ -77,7 +133,7 @@ public class PlayerShootingController : MonoBehaviour
 
         while (currentLerpTime < 1.0f)
         {
-            gunTransform.position = Vector2.Lerp(gunTransform.position, gunOriginalPosition.position, Mathf.SmoothStep(0.0f, 1.0f, currentLerpTime));
+            gunSpriteTransform.position = Vector2.Lerp(gunSpriteTransform.position, gunOriginalPosition.position, Mathf.SmoothStep(0.0f, 1.0f, currentLerpTime));
             currentLerpTime += Time.deltaTime / recoilDuration;
             yield return null;
         }

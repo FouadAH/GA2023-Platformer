@@ -11,6 +11,7 @@ public class PlayerMovementController : MonoBehaviour
     Vector2 targetVelocity;
 
     public Animator animator;
+    public SpriteRenderer spriteRenderer;
 
     [Header("Movement Settings")]
     public float movementSpeed = 8f;
@@ -60,6 +61,7 @@ public class PlayerMovementController : MonoBehaviour
 
         playerInputs = new PlayerInputMaster();
         playerInputs.Enable();
+
         playerInputs.Player.Jump.started += Jump_started;
         playerInputs.Player.Jump.canceled += Jump_canceled;
 
@@ -229,6 +231,27 @@ public class PlayerMovementController : MonoBehaviour
         animator.SetBool("isJumping", !collisions.onGround);
     }
 
+    public void PushInDirection(float forceAmount, Vector2 direction)
+    {
+        float yMultipler = 1f;
+        float xMultipler = 1f;
+
+        if (!collisions.onGround && direction.y > 0.8f)
+        {
+            targetVelocity.y = 0;
+            yMultipler = 1.5f;
+
+        }
+        else
+        {
+            direction.y = 0;
+            xMultipler = 1.3f;
+        }
+
+        Vector2 forceDirection = new Vector2(direction.x * xMultipler, direction.y * yMultipler);
+        targetVelocity += direction * forceAmount;
+    }
+
     public void Flip()
     {
         if (moveInputDirection.x != 0)
@@ -236,7 +259,8 @@ public class PlayerMovementController : MonoBehaviour
             if (facingDirection != moveInputDirection.x)
             {
                 facingDirection *= -1;
-                transform.localScale = new Vector3(-facingDirection, 1);
+                spriteRenderer.flipX = facingDirection == 1;
+                //transform.localScale = new Vector3(-facingDirection, 1);
             }
         }
     }
